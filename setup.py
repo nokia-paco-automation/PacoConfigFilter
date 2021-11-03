@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='PacoConfigFilter',
-    version='',
-    packages=find_packages(where="."),
+    version='0.1',
+    packages=find_packages(),
     url='',
     license='',
     author='MVahlenkamp',
