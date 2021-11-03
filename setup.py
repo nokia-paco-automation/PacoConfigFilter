@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='PacoConfigFilter',
     version='',
-    packages=[''],
+    packages=find_packages(where="."),
     url='',
     license='',
     author='MVahlenkamp',
