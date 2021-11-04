@@ -21,9 +21,9 @@ def process(i: str, o: str):
     """
     data = load_data(i)
     drop_nis(data)
-    irbs = deduce_base_irb_interfaces(data)
-    remove_bfd_interfaces(irbs, data)
-    remove_interfaces(irbs, data)
+    in_use_interfaces = deduce_in_use_interfaces(data)
+    remove_bfd_interfaces(in_use_interfaces, data)
+    remove_interfaces(in_use_interfaces, data)
     finish(data, o)
 
 
@@ -60,15 +60,15 @@ def remove_interfaces(interfaces: List[Interface], data):
     :return: None
     """
     result = []
-    for irb in interfaces:
+    for interface in interfaces:
         for entry in data['interface']:
-            if entry['name'] == irb.interface_name:
+            if entry['name'] == interface.interface_name:
                 interf = copy.deepcopy(entry)
                 interf['subinterface'] = []
                 result.append(interf)
 
                 for subif in entry['subinterface']:
-                    if subif['index'] == irb.unit:
+                    if subif['index'] == interface.unit:
                         interf['subinterface'].append(subif)
 
     data['interface'] = result
@@ -89,7 +89,7 @@ def remove_bfd_interfaces(irbs, data):
     data['bfd']['subinterface'] = match
 
 
-def deduce_base_irb_interfaces(data):
+def deduce_in_use_interfaces(data):
     """
     Figure out what the IRB interfaces are in the (remaining) NetworkInstances
     :param data: the config blob
@@ -101,14 +101,13 @@ def deduce_base_irb_interfaces(data):
             interfs.add(interface['name'])
     result = []
     for x in interfs:
-        if "irb" in x:
-            result.append(Interface.new_interface_from_string(x))
+        result.append(Interface.new_interface_from_string(x))
     return result
 
 
 def finish(data, o: str):
     if o is not None:
-        with open(o, "rw") as outfile:
+        with open(o, "w+") as outfile:
             json.dump(data, outfile, indent="  ")
     else:
         print(json.dumps(data, indent="  "))
