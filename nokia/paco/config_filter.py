@@ -6,6 +6,8 @@ import sys
 import logging
 from typing import List
 
+# define the NetworkInsatnces to keep
+# used in contains match, no need to define the exact name of the NI
 keep_nis = ['provisioning', 'infrastructure', "default"]
 
 
