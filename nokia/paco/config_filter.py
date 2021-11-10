@@ -61,26 +61,25 @@ def remove_interfaces(interfaces: List[Interface], data):
     :param data: The config
     :return: None
     """
-    result = []
+    result = {}
 
     # create list of pure interface names without unit
     base_interfaces = [param.interface_name for param in interfaces]
 
     for entry in data['interface']:
 
-        # process lag memebers
-        if "ethernet" in entry and "aggregate-id" in entry["ethernet"]:
-            # if actual interface is aggregate member and belongs to a lag that should remain, add it to the result
-            if entry["ethernet"]["aggregate-id"] in base_interfaces:
-                result.append(copy.deepcopy(entry))
-                continue
+        # add all ethernet interfaces
+        if "ethernet" in entry['name']:
+            interf = copy.deepcopy(entry)
+            interf['subinterface'] = []
+            result[entry['name']] = interf
 
         # process interfaces with subinterfaces
         for interface in interfaces:
             if entry['name'] == interface.interface_name:
                 interf = copy.deepcopy(entry)
                 interf['subinterface'] = []
-                result.append(interf)
+                result[entry['name']] = interf
 
                 for subif in entry['subinterface']:
                     if subif['index'] == interface.unit:
