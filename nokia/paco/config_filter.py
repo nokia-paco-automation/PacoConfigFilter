@@ -62,8 +62,19 @@ def remove_interfaces(interfaces: List[Interface], data):
     :return: None
     """
     result = []
-    for interface in interfaces:
-        for entry in data['interface']:
+    for entry in data['interface']:
+
+        # process lag memebers
+        def prune_unit_number(param: Interface):
+            return param.interface_name
+
+        if "ethernet" in entry and "aggregate-id" in entry["ethernet"]:
+            if entry["ethernet"]["aggregate-id"] in map(prune_unit_number, interfaces):
+                result.append(copy.deepcopy(entry))
+                continue
+
+        # process interfaces with subinterfaces
+        for interface in interfaces:
             if entry['name'] == interface.interface_name:
                 interf = copy.deepcopy(entry)
                 interf['subinterface'] = []
@@ -101,6 +112,7 @@ def deduce_in_use_interfaces(data):
     for entry in data['network-instance']:
         for interface in entry['interface']:
             interfs.add(interface['name'])
+
     result = []
     for x in interfs:
         result.append(Interface.new_interface_from_string(x))
