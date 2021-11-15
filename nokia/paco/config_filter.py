@@ -1,3 +1,7 @@
+"""
+This is a module that removes the parts from the pacoparser generated config which are not considered base config.
+These config parts will further be handled by other tools and will therefore not be pushed by the initial configuration process.
+"""
 import argparse
 import copy
 import json
@@ -77,9 +81,10 @@ def remove_interfaces(interfaces: List[Interface], data):
         # process interfaces with subinterfaces
         for interface in interfaces:
             if entry['name'] == interface.interface_name:
-                interf = copy.deepcopy(entry)
-                interf['subinterface'] = []
-                result[entry['name']] = interf
+                if entry['name'] not in result:
+                    interf = copy.deepcopy(entry)
+                    interf['subinterface'] = []
+                    result[entry['name']] = interf
 
                 for subif in entry['subinterface']:
                     if subif['index'] == interface.unit:
@@ -121,6 +126,13 @@ def deduce_in_use_interfaces(data):
 
 
 def finish(data, o: str):
+    """
+    Finish the process by writing the data to disk.
+
+    :param data: the python struct that is to be written to the file
+    :param o: the ouput filename
+    :return: None
+    """
     if o is not None:
         with open(o, "w+") as outfile:
             json.dump(data, outfile, indent="  ")
