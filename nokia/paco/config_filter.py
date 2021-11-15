@@ -67,9 +67,6 @@ def remove_interfaces(interfaces: List[Interface], data):
     """
     result = {}
 
-    # create list of pure interface names without unit
-    base_interfaces = [param.interface_name for param in interfaces]
-
     for entry in data['interface']:
 
         # add all ethernet interfaces
