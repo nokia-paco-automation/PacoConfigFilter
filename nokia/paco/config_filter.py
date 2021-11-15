@@ -85,7 +85,7 @@ def remove_interfaces(interfaces: List[Interface], data):
                     if subif['index'] == interface.unit:
                         interf['subinterface'].append(subif)
 
-    data['interface'] = result
+    data['interface'] = [x for x in result.values()]
 
 
 def remove_bfd_interfaces(irbs, data):
